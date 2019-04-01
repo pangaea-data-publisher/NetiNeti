@@ -184,7 +184,7 @@ def resolve_abbreviated_names(names_list, names_set):
     for name in full_names_list:
         result = name_regex.match(name).groups()
         names_dict[result[0] + "." + result[2]] = result[1]
-    print names_dict.keys()
+    print (names_dict.keys())
     for name in abbr_names:
         if names_dict.has_key(name):
             resolved_names.append(name[0] \

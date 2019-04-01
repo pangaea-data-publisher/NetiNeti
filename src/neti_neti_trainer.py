@@ -14,7 +14,8 @@ All rights resersved.
 import nltk
 import random
 import os
-from neti_neti_helper import strip_token, get_words_slice
+#from neti_neti_helper import strip_token, get_words_slice
+from src.neti_neti_helper import strip_token, get_words_slice
 
 class NetiNetiTrainer:
     """A class that defines the training algorithm and the training files
@@ -70,7 +71,7 @@ class NetiNetiTrainer:
         fast access to them. Tokens stored as keys of the dictionary,
         values are irrelevant and are set to 1.
         """
-        lines = open(self._sci_names_file).readlines()
+        lines = open(self._sci_names_file,encoding="utf8").readlines()
         all_sci_names = [line.strip() for line in lines]
         random.shuffle(all_sci_names)
         sci_names = all_sci_names[:self._sci_names_training_num]
@@ -100,7 +101,7 @@ class NetiNetiTrainer:
 
         """
         featuresets = []
-        ndata = open(self._negative_training_file).read()
+        ndata = open(self._negative_training_file, encoding='utf8').read()
         ntokens = nltk.word_tokenize(ndata)
         neg_trigrams = nltk.trigrams(ntokens)
         index = -1
@@ -138,7 +139,7 @@ class NetiNetiTrainer:
     def _get_positive_training_data(self):
         """Returns list of data for positive training"""
         data = []
-        for line in open(self._positive_training_file):
+        for line in open(self._positive_training_file,encoding="utf8"):
             if line.strip():
                 name, context = line.split("---", 1)
             data.append({ 'name' : name.strip(), 'context' : context.strip() })
@@ -261,12 +262,24 @@ class NetiNetiTrainer:
         # features["char-2_first_word_in_pc"] = char_before_last_second
         # end BUG
 
-        features["first_word_in_wl"]  = \
-            self._white_list.has_key(words[0].lower())
-        features["second_word_in_wl"] = \
-          self._white_list.has_key(get_words_slice(words, 1, 0, 1000).lower())
-        features["third_word_in_wl"]  = \
-          self._white_list.has_key(get_words_slice(words, 2, 0, 1000).lower())
+        #features["first_word_in_wl"]  = \
+            #self._white_list.has_key(words[0].lower())
+        if words[0].lower() not in self._white_list:
+            features["first_word_in_wl"]=None
+
+        #features["second_word_in_wl"] = \
+          #self._white_list.has_key(get_words_slice(words, 1, 0, 1000).lower())
+
+        if get_words_slice(words, 1, 0, 1000).lower() not in self._white_list:
+            features["second_word_in_wl"]=None
+
+        #features["third_word_in_wl"]  = \
+          #self._white_list.has_key(get_words_slice(words, 2, 0, 1000).lower())
+
+        if get_words_slice(words, 2, 0, 1000).lower() not in self._white_list:
+            features["third_word_in_wl"] = None
+
+
         for i in range(context_span):
             features[str(i + 1) + "_context"] = \
                 strip_token(get_words_slice(context_array,

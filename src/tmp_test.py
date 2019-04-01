@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from neti_neti_trainer import NetiNetiTrainer
-from neti_neti import NetiNeti
+from src.neti_neti_trainer import NetiNetiTrainer
+from src.neti_neti import NetiNeti
 import subprocess
 import shlex
 import math
@@ -41,13 +41,13 @@ population = []
 time_start = time.clock()
 classifier = NetiNetiTrainer()
 time_training = time.clock()
-print "Training time: %s" % (time_training - time_start)
+print ("Training time: %s" % (time_training - time_start))
 nn = NetiNeti(classifier)
 for i in range(1, num_cycles):
-    print "going through the cycle %s" % i
+    print ("going through the cycle %s" % i)
     time_start = time.clock()
     result = nn.find_names(open("data/test.txt").read())
-    print "Name finding time: %s" % (time.clock() - time_start)
+    print ("Name finding time: %s" % (time.clock() - time_start))
 
     test_result_file = open("data/test_result_after_refactoring.txt", 'w')
 
@@ -76,4 +76,4 @@ sum = 0
 for i in population:
     sum = sum + i
 set = ','.join([str(p) for p in population])
-print "Mean: %s, St. dev: %s, set: %s" % (float(sum)/float(len(population)), dev, set)
+print ("Mean: %s, St. dev: %s, set: %s" % (float(sum)/float(len(population)), dev, set))

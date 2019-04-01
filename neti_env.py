@@ -16,11 +16,11 @@ import tempfile
 import distutils.sysconfig
 try:
     import subprocess
-except ImportError, e:
+except ImportError as e:
     if sys.version_info <= (2, 3):
-        print 'ERROR: %s' % e
-        print 'ERROR: this script requires Python 2.4 or greater; or at least the subprocess module.'
-        print 'If you copy subprocess.py from a newer version of Python this script will probably work'
+        print ('ERROR: ' , e)
+        print ('ERROR: this script requires Python 2.4 or greater; or at least the subprocess module.')
+        print ('If you copy subprocess.py from a newer version of Python this script will probably work')
         sys.exit(101)
     else:
         raise
@@ -261,7 +261,7 @@ def rmtree(dir):
 
 def make_exe(fn):
     if hasattr(os, 'chmod'):
-        oldmode = os.stat(fn).st_mode & 07777
+        oldmode = (os.stat(fn).st_mode) & 07777
         newmode = (oldmode | 0555) & 07777
         os.chmod(fn, newmode)
         logger.info('Changed mode of %s to %s', fn, oct(newmode))

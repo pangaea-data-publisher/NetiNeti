@@ -14,7 +14,7 @@ All rights resersved.
 """
 import os
 import nltk
-from neti_neti_helper import *
+from src.neti_neti_helper import *
 
 class NetiNeti():
     """Uses the trained NetiNetiTrainer model and searches through text
@@ -75,7 +75,14 @@ class NetiNeti():
         else:
             names_list.sort()
             resolved_names = names_list
-        return "\n".join(resolved_names), names_verbatim, offsets
+
+        #added by ASD - return dict
+        d = {}
+        d['input']=names_verbatim
+        d['output']=resolved_names
+        d['offsets']=offsets
+        #return "\n".join(resolved_names), names_verbatim, offsets
+        return d
 
     def _find_names_in_tokens(self, tokens):
         """Returns tuple
@@ -104,6 +111,9 @@ class NetiNeti():
                 self._names_list.append(tokens[0])
         else:
             trigrams = nltk.trigrams(tokens)
+            #added by ASD
+            trigrams = list(trigrams)
+
             self._walk_trigrams(trigrams, tokens)
             self._check_last_bigram_unigram(trigrams[-1], tokens)
         return self._generate_output()
@@ -306,8 +316,10 @@ class NetiNeti():
         """
         word = remove_trailing_period(word)
         word_parts = word.split("-")
-        res = [self._black_dict.has_key(part) for part in word_parts]
-        return (True not in res and not self._black_dict.has_key(word.lower()))
+        #res = [self._black_dict.has_key(part) for part in word_parts]
+        res = [part in self._black_dict for part in word_parts]
+        #return (True not in res and not self._black_dict.has_key(word.lower()))
+        return (True not in res and not word.lower() in self._black_dict)
 
     def _is_a_name(self, token, context, index, span):
         """Returns a boolean
@@ -341,7 +353,7 @@ class NetiNeti():
             name = remove_trailing_period((word1 + " " + word2
                 + " " + word3).strip())
         if(name[1] == "." and name[2] == " "):
-            if(self._names_dict.has_key(name)):
+            if(name in self._names_dict):
                 self._names_list.append(remove_trailing_period((word1[0]
                     + "[" + self._names_dict[name] + "]" + " "
                     + word2 + " " + word3).strip()))
@@ -376,4 +388,4 @@ class NetiNeti():
                 self._index_dict[self._count] + len(name))
 
 if __name__ == '__main__':
-    print "NETI..NETI\n"
+    print ("NETI..NETI\n")
